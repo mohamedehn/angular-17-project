@@ -1,5 +1,8 @@
 node_modules
+
+.angular/cache
 .angular
-angular
-/angular
-/.angular
+.angular/cache/
+.angular/cache/17.0.0-rc.2
+.angular/cache/17.0.0-rc.2/
+.angular/cache/17.0.0-rc.2/vite/deps
