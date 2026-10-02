@@ -5,18 +5,20 @@ import { HousingLocation } from "./housing-location";
   providedIn: "root",
 })
 export class HousingService {
-  public url: string = "http://localhost:3000/locations";
+  // Données statiques (compatibles GitHub Pages) : chemin relatif au base href
+  public url: string = "assets/db.json";
 
   constructor() { }
 
   async getAllHousingLocations(): Promise<HousingLocation[]> {
     const data = await fetch(this.url);
-    return await data.json()??[];
+    const json = await data.json();
+    return json?.locations ?? [];
   }
 
   async getHousingLocationById(id: number): Promise<HousingLocation | undefined> {
-    const data = await fetch(`${this.url}/${id}`);
-    return await data.json()??{};
+    const locations = await this.getAllHousingLocations();
+    return locations.find(location => location.id === id);
   }
 
   submitApplication(firstName: string, lastName: string, email: string) {

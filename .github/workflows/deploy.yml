@@ -1,0 +1,44 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx ng build --configuration production --base-href /angular-17-project/
+        env:
+          NG_BUILD_PARALLEL_TS: "0"
+      # Fallback SPA : GitHub Pages sert 404.html pour les routes inconnues (ex: /details/1)
+      - run: cp dist/first-app/browser/index.html dist/first-app/browser/404.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/first-app/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
